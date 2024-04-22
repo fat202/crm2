@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  php-apache-environment:
+    build:
+        context: .
+        dockerfile: ./docker/Dockerfile
+    depends_on:
+        - db_ecm
+    volumes:
+      - ./:/var/www/html/
+    ports:
+      - 8012:80
+
+  db_ecm:
+    container_name: db_ecm
+    image: mysql
+    #restart: always
+    environment:
+        MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
+        MYSQL_DATABASE: MY_DATABASE
+        MYSQL_USER: MYSQL_USER
+        MYSQL_PASSWORD: MYSQL_PASSWORD
+    ports:
+        - "9909:3306"
+    command: mysqld --sql_mode="NO_ENGINE_SUBSTITUTION"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+        - '8099:80'
+    #restart: always
+    environment:
+        PMA_HOST: db_ecm
+    depends_on:
+        - db_ecm
